@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Filo — Pegaso de las Sombras</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-parchment: #f7f1e3;
+        --bg-parchment-2: #efe6d1;
+        --ink: #2e2a24;
+        --accent: #8c4a2f;
+        --accent-2: #b17d5b;
+        --steel: #5f6a7d;
+        --shadow: rgba(0,0,0,0.1);
+        --badge: #7b2e1c;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: 'Lora', serif;
+        color: var(--ink);
+        background: radial-gradient(1200px 800px at 20% 10%, var(--bg-parchment), var(--bg-parchment-2)) fixed;
+      }
+      .page { max-width: 980px; margin: 40px auto; padding: 24px; }
+      .statblock {
+        background: #fffaf3;
+        border: 4px double var(--accent);
+        border-radius: 14px;
+        box-shadow: 0 8px 24px var(--shadow);
+        overflow: hidden;
+      }
+      .header {
+        background: linear-gradient(90deg, #fff1e4 0%, #fff8f1 40%, #fff1e4 100%);
+        padding: 20px 24px;
+        border-bottom: 2px solid var(--accent-2);
+        position: relative;
+      }
+      .title {
+        font-family: 'Cinzel', serif;
+        font-weight: 700;
+        font-size: 28px;
+        letter-spacing: 0.5px;
+        margin: 0 0 6px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .title .icon { width: 28px; height: 28px; flex: 0 0 28px; }
+      .subtitle { font-family: 'Cinzel', serif; font-size: 14px; color: #6b4f3d; margin: 0; }
+      .badge {
+        display: inline-block;
+        background: #ffe7d6; /* mayor contraste para chips */
+        border: 1px solid var(--badge);
+        color: var(--badge);
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-family: 'Cinzel', serif; font-size: 12px; font-weight: 600;
+        line-height: 1.2;
+        box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+        margin-right: 6px;
+      }
+      .header .badge { position: absolute; right: 24px; top: 16px; }
+      .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; padding: 20px 24px; }
+      .panel { border: 1px solid #e4d6c1; border-radius: 10px; background: #fffdf7; padding: 14px; }
+      .panel h3 { font-family: 'Cinzel', serif; font-size: 14px; color: var(--accent); margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 0.8px; }
+      .kv { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; font-size: 14px; }
+      .kv div { display: flex; justify-content: space-between; }
+      .kv b { color: #3b2e25; }
+      .abilities { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+      .ability { text-align: center; border: 1px dashed #e7d6c5; border-radius: 8px; padding: 10px 8px; background: #fffefb; }
+      .ability .abbr { font-family: 'Cinzel', serif; color: var(--steel); font-size: 12px; letter-spacing: 1px; }
+      .ability .score { font-size: 20px; font-weight: 700; }
+      .ability .mod { color: #6b4f3d; font-size: 13px; }
+      .section { padding: 0 24px 20px; }
+      .section h2 { font-family: 'Cinzel', serif; font-size: 18px; margin: 0 0 10px 0; color: var(--accent); border-bottom: 2px solid #e6c9ac; padding-bottom: 6px; }
+      .trait { margin-bottom: 12px; }
+      .trait h4 { margin: 0 0 4px 0; font-weight: 700; color: #3b2e25; }
+      .trait p { margin: 0; font-size: 14px; }
+      .dotlist { margin: 8px 0 0 0; padding-left: 18px; }
+      .dotlist li { margin: 5px 0; }
+      .actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
+      .action { border: 1px solid #ead6c3; border-radius: 10px; background: #fffef9; padding: 10px 12px; }
+      .action h4 { margin: 0 0 4px; font-weight: 700; color: #3b2e25; }
+      .action p { margin: 0; font-size: 14px; }
+      .footer { background: #fff6ea; border-top: 2px solid var(--accent-2); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+      .btn { border: 1px solid var(--accent-2); background: linear-gradient(#fff, #ffe8d0); color: #5b3b2a; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-family: 'Cinzel', serif; }
+      .btn:hover { filter: brightness(1.02); }
+      /* Tabs */
+      .tabs { display: flex; gap: 8px; padding: 0 24px; margin-top: 10px; }
+      .tab-btn {
+        border: 1px solid var(--accent-2);
+        background: linear-gradient(#fff, #ffe8d0);
+        color: #5b3b2a;
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: 'Cinzel', serif;
+        font-size: 14px;
+      }
+      .tab-btn.active { background: linear-gradient(#fff8f0, #ffdcb5); border-color: var(--accent); }
+      .pane { display: none; }
+      .pane.active { display: block; }
+      @media print { body { background: #fff; } .page { margin: 0; padding: 0; } .footer { display: none; } }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="tabs">
+        <button class="tab-btn active" data-target="pane-dragona">Dragona</button>
+        <button class="tab-btn" data-target="pane-humana">Humana</button>
+      </div>
+      <div id="pane-dragona" class="pane active">
+        <div class="statblock">
+        <div class="header">
+          <h1 class="title">
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#5f6a7d" d="M12 2c2 2 3 4 3 6s-1 4-3 6c-2-2-3-4-3-6s1-4 3-6zm-7 9c3 1 6 2 7 6 1-4 4-5 7-6-3-1-6-2-7-6-1 4-4 5-7 6z"/></svg>
+            🐉 Filo, Dragona de Cristal
+          </h1>
+          <p class="subtitle">Dragona de cristal jóven (cambiaformas), caótico bueno</p>
+        </div>
+
+        <div class="grid">
+          <div class="panel" style="grid-column: span 6;">
+            <h3>💎 Estadísticas Generales</h3>
+            <div class="kv">
+              <div><b>Clase de Armadura</b> <span>19</span></div>
+              <div><b>Puntos de Golpe</b> <span>120 (12d10 + 60)</span></div>
+              <div><b>Velocidad</b> <span>60 ft.; vuelo 100 ft.</span></div>
+              <div><b>Desafío</b> <span>9; competencia +3</span></div>
+              <div><b>Sentidos</b> <span>visión en la oscuridad 60 ft.; Percepción pasiva 18</span></div>
+              <div><b>Idiomas</b> <span>Común, Celestial, Élfico, Silvano; telepatía 60 ft con Takeshi</span></div>
+            </div>
+          </div>
+          <div class="panel" style="grid-column: span 6;">
+            <h3>Competencias</h3>
+            <div class="kv">
+              <div><b>Tiradas de Salvación</b> <span>DES +6, SAB +6, CON +6</span></div>
+              <div><b>Habilidades</b> <span>Percepción +8, Atletismo +7, Sigilo +6</span></div>
+              <div><b>Resistencias</b> <span>contundente, perforante y cortante no mágico; radiante o necrótico</span></div>
+              <div><b>Inmunidades</b> <span>miedo, encantamiento</span></div>
+            </div>
+          </div>
+
+          <div class="panel" style="grid-column: span 12;">
+            <h3>Atributos</h3>
+            <div class="abilities">
+              <div class="ability"><div class="abbr">FUE</div><div class="score">19</div><div class="mod">(+4)</div></div>
+              <div class="ability"><div class="abbr">DES</div><div class="score">17</div><div class="mod">(+3)</div></div>
+              <div class="ability"><div class="abbr">CON</div><div class="score">16</div><div class="mod">(+3)</div></div>
+              <div class="ability"><div class="abbr">INT</div><div class="score">10</div><div class="mod">(+0)</div></div>
+              <div class="ability"><div class="abbr">SAB</div><div class="score">17</div><div class="mod">(+3)</div></div>
+              <div class="ability"><div class="abbr">CAR</div><div class="score">15</div><div class="mod">(+2)</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>🌌 Rasgos</h2>
+          <div class="trait">
+            <h4>Armadura Alada de Titanio Bendita</h4>
+            <ul class="dotlist">
+              <li>+1 a la CA (ya incluido).</li>
+              <li>Ataques mágicos.</li>
+              <li>Al volar a 10 ft o menos de un enemigo, inflige <b>2d6 cortante</b></li>
+              <li>Ignora terreno difícil no mágico.</li>
+            </ul>
+          </div>
+          <div class="trait">
+            <h4>Alas del Silencio</h4>
+            <p>En penumbra u oscuridad puede moverse <b>30 ft</b> sin provocar ataques de oportunidad (1/turno).</p>
+          </div>
+          <div class="trait">
+            <h4>Cambiaformas</h4>
+            <p>Como <b>acción bonus</b>, adopta forma humana (perdiendo vuelo, ganando trepar 30 ft).</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>🐎 Sinergia de Montura</h2>
+          <ul class="dotlist">
+            <li>Comparte Sigilo (mejor tirada).</li>
+            <li>Takeshi no puede ser desmontado salvo inconsciencia.</li>
+            <li>Si Filo desciende 20 ft y Takeshi golpea, añade <b>+1d6 daño</b> y salvación <b>DES CD 15</b> o derribado.</li>
+            <li>Takeshi puede usar <b>Paso Sombrío</b> hacia/desde el lomo.</li>
+            <li>Takeshi puede reaccionar para reducir daño a Filo en <b>1d10 + mod DES + (nivel de monje ÷ 4)</b>.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>⚔️ Acciones</h2>
+          <div class="actions">
+            <div class="action">
+              <h4>Cascos de Titanio.</h4>
+              <p><b>+7</b> para golpear, 5 ft, un objetivo.</p>
+              <p><b>Golpe:</b> (2d8 + 4) contundente + (1d8) cortante.</p>
+              <p>Si descendió 20 ft, añade <b>2d8</b> y salvación <b>FUE CD 15</b> o derribado.</p>
+            </div>
+            <div class="action">
+              <h4>Corte de Ala.</h4>
+              <p><b>+7</b> para golpear, 10 ft.</p>
+              <p><b>Golpe:</b> 2d10 + 3 cortante.</p>
+              <p><b>Crítico:</b> el objetivo recibe <b>1d8 necrótico</b> al inicio de su siguiente turno.</p>
+            </div>
+            <div class="action">
+              <h4>Explosión Umbrorradiante (Recarga 5–6).</h4>
+              <p>Salvación <b>DEX CD 15</b>; radio 20 ft.</p>
+              <p><b>Fallo:</b> 6d8 radiante + 6d8 necrótico. <b>Éxito:</b> mitad.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>🌀 Reacciones</h2>
+          <ul class="dotlist">
+            <li><b>Escudo de Ala.</b> Cuando una tirada de ataque impacta a Takeshi y Filo se encuentra a 5 pies o menos de él, Filo puede usar su reacción para desplegar sus alas de titanio en defensa. Takeshi gana un bonificador de <b>+2</b> a la CA contra ese ataque, y el atacante vuelve a realizar la tirada de ataque. Debe usar el nuevo resultado, pudiendo provocar un fallo.</li>
+            <li><b>Parry Celestial.</b> Cuando una criatura que Filo puede ver la golpea con un ataque cuerpo a cuerpo, Filo puede usar su reacción para añadir <b>+3</b> a su CA contra ese ataque, posiblemente haciéndolo fallar. Si el ataque falla, Filo puede realizar un contraataque inmediato con un <b>golpe de ala</b>.</li>
+          </ul>
+        </div>
+
+          <div class="section">
+            <h2>🌙 Poderes Celestiales</h2>
+            <p><b>Puntos Celestiales (PC)</b> = 4 + mod SAB + (nivel de Takeshi ÷ 4). Se restauran tras descanso largo; tras un descanso corto se recupera la mitad de los puntos, redondeado hacia abajo.</p>
+            <p><b>Puntos Celestiales (PC) actuales: </b> 9.</p>
+          <ul class="dotlist">
+            <li>
+              <div><b>1 PC — Luz Sombría.</b></div>
+              <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                <span class="badge" style="font-size:11px;padding:2px 6px;margin-right:4px;">Aura</span>
+                <span class="badge" style="font-size:11px;padding:2px 6px;">1 minuto</span>
+              </div>
+              <p>Ventaja en Sigilo y resistencia a radiante o necrótico.</p>
+            </li>
+            <li>
+              <div><b>1 PC — Velo del Espejismo.</b></div>
+              <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                <span class="badge" style="font-size:11px;padding:2px 6px;">1 minuto</span>
+              </div>
+              <p>+2 CA si están a ≤ 10 ft; enemigos que fallen ataques cuerpo a cuerpo tienen desventaja en el siguiente.</p>
+            </li>
+            <li>
+              <div><b>1 PC — Eco del Viento.</b></div>
+              <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                <span class="badge" style="font-size:11px;padding:2px 6px;">Reacción</span>
+              </div>
+              <p>Coloca un escudo que reduce daño en <b>1d12 + mod SAB</b>; si el daño queda en 0, gana <b>+10 ft</b> de movimiento.</p>
+            </li>
+            <li>
+              <div><b>2 PC — Égida del Crepúsculo.</b></div>
+              <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                <span class="badge" style="font-size:11px;padding:2px 6px;">10 minutos</span>
+              </div>
+              <p>Resistencia elemental para Filo y su conexión; enemigos que golpeen reciben <b>1d4</b> radiante.</p>
+            </li>
+            <li>
+              <div><b>2 PC — Vínculo Sanador.</b></div>
+              <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                <span class="badge" style="font-size:11px;padding:2px 6px;margin-right:4px;">Bonus</span>
+                <span class="badge" style="font-size:11px;padding:2px 6px;">Reacción</span>
+              </div>
+              <p>Cura <b>1d8 + mod SAB</b> PG o estabiliza en 1 PG.</p>
+            </li>
+            <li>
+              <div><b>3 PC — Círculo del Alba.</b></div>
+              <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                <span class="badge" style="font-size:11px;padding:2px 6px;margin-right:4px;">Acción</span>
+                <span class="badge" style="font-size:11px;padding:2px 6px;margin-right:4px;">Radio 20 ft</span>
+                <span class="badge" style="font-size:11px;padding:2px 6px;">DEX CD 15</span>
+              </div>
+              <p>Daño <b>6d8</b> radiante + <b>6d8</b> necrótico (mitad al salvar).</p>
+            </li>
+            <li>
+              <div><b>4 PC — Fusión Estelar.</b></div>
+              <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                <span class="badge" style="font-size:11px;padding:2px 6px;">10 minutos</span>
+              </div>
+              <p>Vuelo 100 ft; resistencia a todo daño no mágico; ataques de Takeshi +<b>1d8</b> rad/nec; PG compartidos; recuperan <b>1d10 + mod SAB</b> PG por turno; enemigos a 10 ft <b>SAB CD 16</b> o Aterrados.</p>
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>⚔️ Acción Conjunta — Técnica de los Dos Albores</h2>
+          <p><b>Coste:</b> 2 Ki + 2 PC • <b>Recarga:</b> 1/descanso largo</p>
+          <p><b>Salvación DEX CD 16</b> (área 15 ft).</p>
+          <p><b>Fallo:</b> 8d10 (4d10 radiante + 4d10 necrótico) y derribo; <b>éxito</b> mitad.</p>
+          <p><b>Tras impacto:</b> Takeshi realiza un ataque gratuito (+dado de Artes Marciales + mod SAB); ambos pueden teletransportarse 30 ft; enemigos supervivientes <b>SAB CD 15</b> o Aterrados.</p>
+          <p style="font-style:italic;color:#6b4f3d;">“El aire se dobla, la noche se abre… Dos almas, un mismo amanecer.”</p>
+        </div>
+
+        <div class="section">
+          <h2>🧠 Acciones Legendarias (2 por ronda)</h2>
+          <ul class="dotlist">
+            <li><b>Aleteo Veloz.</b> Se mueve 20 ft sin provocar ataques.</li>
+            <li><b>Golpe Relámpago.</b> Realiza un Corte de Ala adicional.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>💖 Personalidad</h2>
+          <p>Filo es la armonía entre gracia y letalidad: una dragona de cristal forjada en sombras y luz. Su vínculo con Takeshi trasciende la montura; cuando vuelan juntos, las sombras obedecen y el amanecer mismo se dobla ante ellos.</p>
+        </div>
+
+        <div class="footer">
+          <div style="font-size:12px;color:#7a5a46;">Hoja temática DnD 5e — lista para imprimir</div>
+          <button class="btn" onclick="window.print()">Imprimir / Exportar a PDF</button>
+        </div>
+        </div>
+      </div>
+      <div id="pane-humana" class="pane">
+        <div class="statblock">
+          <div class="header">
+            <h1 class="title">
+              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#5f6a7d" d="M12 2c2 2 3 4 3 6s-1 4-3 6c-2-2-3-4-3-6s1-4 3-6zm-7 9c3 1 6 2 7 6 1-4 4-5 7-6-3-1-6-2-7-6-1 4-4 5-7 6z"/></svg>
+              🌸 Filo
+            </h1>
+            <p class="subtitle">Celestial mediana (cambiaformas), caótica buena</p>
+          </div>
+
+          <div class="grid">
+            <div class="panel" style="grid-column: span 6;">
+              <h3>💎 Estadísticas Generales</h3>
+              <div class="kv">
+                <div><b>CA</b> <span>18 (Exoesqueleto de Titanio Bendito)</span></div>
+                <div><b>PG</b> <span>100 (12d8 + 36)</span></div>
+                <div><b>Velocidad</b> <span>40 ft.; trepar 30 ft.</span></div>
+                <div><b>Idiomas</b> <span>Común, Celestial, Élfico, Silvano</span></div>
+                <div><b>Sentidos</b> <span>Visión en la oscuridad 60 ft.; Percepción pasiva 17</span></div>
+              </div>
+            </div>
+            <div class="panel" style="grid-column: span 6;">
+              <h3>Competencias</h3>
+              <div class="kv">
+                <div><b>Salvaciones</b> <span>DES +6, SAB +7, CAR +6</span></div>
+                <div><b>Habilidades</b> <span>Persuasión +6, Medicina +7, Perspicacia +7, Acrobacias +6</span></div>
+                <div><b>Resistencias</b> <span>Radiante, Necrótico</span></div>
+                <div><b>Inmunidades</b> <span>Encantamiento, Miedo</span></div>
+              </div>
+            </div>
+
+            <div class="panel" style="grid-column: span 12;">
+              <h3>Atributos</h3>
+              <div class="abilities">
+                <div class="ability"><div class="abbr">FUE</div><div class="score">14</div><div class="mod">(+2)</div></div>
+                <div class="ability"><div class="abbr">DES</div><div class="score">17</div><div class="mod">(+3)</div></div>
+                <div class="ability"><div class="abbr">CON</div><div class="score">16</div><div class="mod">(+3)</div></div>
+                <div class="ability"><div class="abbr">INT</div><div class="score">10</div><div class="mod">(+0)</div></div>
+                <div class="ability"><div class="abbr">SAB</div><div class="score">18</div><div class="mod">(+4)</div></div>
+                <div class="ability"><div class="abbr">CAR</div><div class="score">17</div><div class="mod">(+3)</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>🌟 Rasgos</h2>
+            <div class="trait">
+              <h4>🌈 Corazón Brillante</h4>
+              <p>Filo puede usar una acción bonus para emitir una luz suave que calma y anima. Aliados a 15 ft que puedan verla ganan ventaja en la próxima tirada de ataque o salvación antes del final de su siguiente turno.</p>
+              <p style="font-style:italic;color:#6b4f3d;">“¡Tú puedes, Takeshi! No te atrevas a rendirte ahora, tonto.”</p>
+            </div>
+            <div class="trait">
+              <h4>💞 Energía de Hermana Menor</h4>
+              <p>Cada vez que Takeshi lanza un golpe crítico o esquiva un ataque, Filo gana 1 punto celestial (máx. +2 sobre el límite normal). Mientras tenga más del máximo, brilla con un aura rosada tenue; durante este tiempo, las curaciones que realice sanan +2 PG adicionales.</p>
+            </div>
+            <div class="trait">
+              <h4>🪽 Sintonía de Sombras</h4>
+              <p>Mientras esté a 30 ft o menos de Takeshi, ambos tienen ventaja en tiradas contra efectos de miedo o hechizos de ilusión. Si Takeshi usa Paso Sombrío cerca de ella, Filo puede mover 10 ft como reacción sin provocar ataques de oportunidad.</p>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>⚔️ Acciones</h2>
+            <div class="actions">
+              <div class="action">
+                <h4>Espada de los Dos Albores</h4>
+                <p>Ataque cuerpo a cuerpo: <b>+6</b> para golpear, alcance 5 ft.</p>
+                <p><b>Golpe:</b> (2d8 + 3) de daño <i>radiante</i> o <i>necrótico</i>.</p>
+                <p>Si Takeshi está a 10 ft o menos, ambos infligen <b>+1d4</b> de daño radiante adicional.</p>
+              </div>
+              <div class="action">
+                <h4>Bendición Umbrorradiante (Recarga 5–6)</h4>
+                <p>Elige hasta 5 criaturas aliadas a 30 ft: recuperan <b>4d10 + mod SAB</b> PG y ganan resistencia al daño radiante y necrótico durante 1 minuto.</p>
+                <p>Si Takeshi está entre los objetivos, ambos recuperan además <b>1d8</b> PG por turno durante 2 turnos.</p>
+                <p style="font-style:italic;color:#6b4f3d;">Visual: un brillo dual, mitad rosa y mitad azul, que se arremolina alrededor del pecho de los aliados.</p>
+              </div>
+              <div class="action">
+                <h4>Luz Restauradora</h4>
+                <p>Elimina una condición (<i>Cegado, Envenenado o Asustado</i>) o cura <b>2d8 + mod SAB</b> PG a un aliado visible.</p>
+              </div>
+              <div class="action">
+                <h4>Círculo del Alba (3/descanso largo)</h4>
+                <p>Aliados en 25 ft recuperan <b>4d8 + mod SAB</b> PG y ganan ventaja en su próxima tirada de ataque.</p>
+                <p>Enemigos en el área deben hacer salvación de <b>DEX CD 15</b> o sufrir <b>4d8 radiante + 4d8 necrótico</b> (mitad al salvar).</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>🌙 Poderes Celestiales</h2>
+            <p><b>Puntos Celestiales (PC)</b> = 4 + mod SAB + (nivel de Takeshi ÷ 4). Se restauran tras descanso largo; tras un descanso corto se recupera la mitad de los puntos, redondeado hacia abajo.</p>
+            <p><b>Puntos Celestiales (PC) actuales: </b> 9.</p>
+            <ul class="dotlist">
+              <li>
+                <div><b>1 PC — Velo del Espejismo.</b></div>
+                <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                  <span class="badge" style="font-size:11px;padding:2px 6px;">1 min</span>
+                </div>
+                <p>+2 CA a Takeshi y Filo si están juntos, y ventaja en sigilo.</p>
+              </li>
+              <li>
+                <div><b>1 PC — Vínculo Sanador.</b></div>
+                <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                  <span class="badge" style="font-size:11px;padding:2px 6px;margin-right:4px;">Bonus</span>
+                  <span class="badge" style="font-size:11px;padding:2px 6px;">Reacción</span>
+                </div>
+                <p>Cura <b>2d8 + mod SAB</b> PG o elimina una condición menor (<i>Envenenado, Asustado</i>).</p>
+              </li>
+              <li>
+                <div><b>2 PC — Égida del Crepúsculo.</b></div>
+                <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                  <span class="badge" style="font-size:11px;padding:2px 6px;">5 min</span>
+                </div>
+                <p>Resistencia a fuego, frío, trueno; los aliados a 10 ft reciben <b>+1d4</b> daño radiante al atacar.</p>
+              </li>
+              <li>
+                <div><b>2 PC — Caricia del Alba.</b></div>
+                <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                  <span class="badge" style="font-size:11px;padding:2px 6px;margin-right:4px;">Acción</span>
+                  <span class="badge" style="font-size:11px;padding:2px 6px;">Alcance 30 ft</span>
+                </div>
+                <p>Filo envía un lazo de luz suave que restaura cuerpo y espíritu. Elige una criatura que puedas ver a 30 ft.</p>
+                <p><b>Efecto:</b> Recupera <b>2d8 + mod SAB</b> puntos de golpe; puede terminar una condición menor (<i>Asustado</i>, <i>Encantado</i> o <i>Envenenado</i>); y obtiene <b>ventaja</b> durante su siguiente turno.</p>
+              </li>
+              <li>
+                <div><b>3 PC — Llama del Amanecer.</b></div>
+                <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                  <span class="badge" style="font-size:11px;padding:2px 6px;">10 min</span>
+                </div>
+                <p>Dos aliados infligen <b>+1d6</b> daño radiante adicional por ataque.</p>
+              </li>
+              <li>
+                <div><b>3 PC — Luz de la Confianza.</b></div>
+                <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                  <span class="badge" style="font-size:11px;padding:2px 6px;margin-right:4px;">Acción</span>
+                  <span class="badge" style="font-size:11px;padding:2px 6px;margin-right:4px;">10 minutos</span>
+                  <span class="badge" style="font-size:11px;padding:2px 6px;margin-right:4px;">Concentración</span>
+                  <span class="badge" style="font-size:11px;padding:2px 6px;">Alcance 30 ft</span>
+                </div>
+                <p>Filo infunde una luz suave en hasta dos criaturas (puede incluirse).</p>
+                <p><b>Efecto:</b> Mientras dure, cada criatura afectada puede, una vez por turno, añadir <b>1d4</b> a una tirada de <i>ataque</i>, <i>salvación</i> o <i>habilidad</i>.</p>
+              </li>
+              <li>
+                <div><b>4 PC — Fusión Estelar.</b></div>
+                <div style="margin:4px 0;font-size:12px;color:#5f6a7d;">
+                  <span class="badge" style="font-size:11px;padding:2px 6px;">10 minutos</span>
+                </div>
+                <p>Vuelo 100 ft; resistencia a todo daño no mágico; ataques de Takeshi +<b>1d8</b> rad/nec; PG compartidos; recuperan <b>1d10 + mod SAB</b> PG por turno; enemigos a 10 ft <b>SAB CD 16</b> o Aterrados.</p>
+              </li>
+              
+                    
+            </ul>
+          </div>
+
+          <div class="section">
+            <h2>🛡️ Reacción</h2>
+            <ul class="dotlist">
+              <li><b>Escudo de Ala.</b> Cuando una tirada de ataque impacta a Takeshi y Filo está a 5 ft o menos, puede usar su reacción para desplegar sus alas de energía. Takeshi gana un <b>+2</b> a la CA contra ese ataque, y el atacante repite la tirada, usando el nuevo resultado.</li>
+            </ul>
+            <p style="font-style:italic;color:#6b4f3d;">“¡Ni se te ocurra tocar a mi hermano!”</p>
+          </div>
+
+          <div class="section">
+            <h2>💫 Acción Legendaria (1 por ronda)</h2>
+            <div class="actions">
+              <div class="action">
+                <h4>Pulso del Amanecer</h4>
+                <p>Filo libera una ráfaga de energía curativa y motivadora. Una criatura aliada a 30 ft recupera <b>2d8 + mod SAB</b> PG y obtiene ventaja en su próxima tirada de ataque. (Puede usarse al final del turno de otra criatura.)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>🌸 Personalidad</h2>
+            <p>Filo humana es luz viva: alegre, testaruda y con una sonrisa capaz de calmar una batalla. Llama a Takeshi “nii-san” (hermano) de manera juguetona, pero se preocupa por él como si fuera su ancla en el mundo mortal. Le encanta comer dulces, peinarse el cabello antes de dormir y entrenar aunque no lo necesite. Su energía cálida y su determinación la convierten en el corazón del dúo: mientras Takeshi enfrenta la oscuridad, ella se asegura de que nunca olvide por qué vale la pena volver a la luz.</p>
+            <p style="font-style:italic;color:#6b4f3d;">“No soy tan fuerte como tú, nii-san… pero te juro que nunca dejaré que caigas.” 💖</p>
+          </div>
+
+          <div class="footer">
+            <div style="font-size:12px;color:#7a5a46;">Hoja temática DnD 5e — lista para imprimir</div>
+            <button class="btn" onclick="window.print()">Imprimir / Exportar a PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const buttons = document.querySelectorAll('.tab-btn');
+        const panes = document.querySelectorAll('.pane');
+        buttons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.remove('active'));
+            panes.forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            const target = btn.getAttribute('data-target');
+            const pane = document.getElementById(target);
+            if (pane) pane.classList.add('active');
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

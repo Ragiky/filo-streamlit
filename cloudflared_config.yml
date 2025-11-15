@@ -1,0 +1,23 @@
+############################################
+# Configuración de Cloudflare Tunnel (fijo) #
+############################################
+# REEMPLAZA los marcadores <...> con tus datos tras crear el túnel.
+
+# ID del túnel (UUID) que obtienes con:
+#   cloudflared tunnel create filo-app
+tunnel: <TUNNEL_UUID>
+
+# Ruta de credenciales generada automáticamente al crear el túnel.
+# En Windows suele estar en C:\Users\<usuario>\.cloudflared\<uuid>.json
+credentials-file: "C:\\Users\\rafae\\.cloudflared\\<TUNNEL_UUID>.json"
+
+ingress:
+  # Subdominio fijo que deseas usar (de tu zona en Cloudflare)
+  # Ejemplo: filo.tudominio.com
+  - hostname: <HOSTNAME_SUBDOMINIO>
+    service: http://localhost:8501
+  # Catch-all para rutas no configuradas
+  - service: http_status:404
+
+logfile: cloudflared_streamlit.log
+loglevel: info
