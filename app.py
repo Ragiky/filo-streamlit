@@ -17,7 +17,6 @@ st.markdown(
         padding-right: 0 !important;
     }
     .stApp {margin: 0 !important; padding: 0 !important;}
-
     .logout-btn {
         position: fixed;
         top: 18px;
@@ -131,7 +130,7 @@ else:
                 st.error("Token inválido. Revisa el que te compartieron.")
 
     if st.session_state.get("authed", False):
-        # Botón flotante dentro de la página
+        # Botón flotante dentro de la página (estilo DnD)
         st.markdown('<a class="logout-btn" href="?logout=1">Cerrar sesión</a>', unsafe_allow_html=True)
 
         html_content = html_path.read_text(encoding="utf-8")
